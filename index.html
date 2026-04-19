@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>System Breach</title>
+
+    <style>
+      body {
+        margin: 0;
+        background: black;
+        color: lime;
+        font-family: monospace;
+        overflow: hidden;
+        text-align: center;
+      }
+
+      #screen {
+        padding-top: 100px;
+        font-size: 24px;
+      }
+
+      .red {
+        color: red;
+        font-size: 28px;
+      }
+
+      #final {
+        display: none;
+        color: white;
+        position: relative;
+        z-index: 2;
+      }
+
+      canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1;
+      }
+
+      /* rung */
+      @keyframes shake {
+        0% {
+          transform: translate(2px, 2px);
+        }
+        25% {
+          transform: translate(-2px, -2px);
+        }
+        50% {
+          transform: translate(2px, -2px);
+        }
+        75% {
+          transform: translate(-2px, 2px);
+        }
+        100% {
+          transform: translate(0, 0);
+        }
+      }
+
+      .shake {
+        animation: shake 0.15s infinite;
+      }
+
+      /* nhấp nháy */
+      .blink {
+        animation: blink 0.5s infinite;
+      }
+
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <audio id="alarm" loop>
+      <source
+        src="https://www.soundjay.com/button/beep-07.wav"
+        type="audio/wav"
+      />
+    </audio>
+
+    <div id="screen">
+      <div class="red blink">⚠ WARNING ⚠</div>
+      <p>Phát hiện xâm nhập hệ thống...</p>
+      <p id="progress">Đang hack: 0%</p>
+    </div>
+
+    <div id="final">
+      <h1>😆 BỊ LỪA RỒI !!! 😆</h1>
+      <p>🎉 Chúc chị Lan Phương và chị Thanh Thảo 🎉</p>
+      <p>✨ Thi đâu trúng đó, làm bài đâu chắc đó ✨</p>
+      <p>📚 Nhìn đề là hiểu, đọc câu là đúng 😆</p>
+      <p>💯 Điểm cao ngất ngưởng, bảng điểm sáng chói 💯</p>
+      <p>🔥 A+ bay đầy trời như mưa luôn 🔥</p>
+    </div>
+
+    <canvas id="matrix"></canvas>
+
+    <script>
+      let percent = 0;
+      let progress = document.getElementById("progress");
+      let alarm = document.getElementById("alarm");
+
+      // chạy âm thanh khi click lần đầu (trình duyệt yêu cầu)
+      document.body.addEventListener(
+        "click",
+        () => {
+          alarm.play();
+        },
+        { once: true },
+      );
+
+      // giả hack %
+      let hack = setInterval(() => {
+        percent += Math.floor(Math.random() * 10) + 1;
+        if (percent > 100) percent = 100;
+
+        progress.innerText = "Đang hack: " + percent + "%";
+
+        if (percent >= 100) {
+          clearInterval(hack);
+          chaos();
+        }
+      }, 200);
+
+      function chaos() {
+        document.body.classList.add("shake");
+        alarm.play();
+
+        setTimeout(() => {
+          document.getElementById("screen").innerHTML =
+            "<div class='red'>💀 ĐANG XOÁ DỮ LIỆU 💀</div><p>KHÔNG THỂ KHÔI PHỤC...</p>";
+        }, 1000);
+
+        setTimeout(() => {
+          document.body.style.background = "red";
+        }, 2000);
+
+        setTimeout(() => {
+          showFinal();
+        }, 4000);
+      }
+
+      function showFinal() {
+        document.body.classList.remove("shake");
+        document.body.style.background = "black";
+        alarm.pause();
+
+        document.getElementById("screen").style.display = "none";
+        document.getElementById("final").style.display = "block";
+
+        startMatrix();
+      }
+
+      // ====== MƯA A+ ======
+      function startMatrix() {
+        let canvas = document.getElementById("matrix");
+        let ctx = canvas.getContext("2d");
+
+        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
+
+        let letters = "A+";
+        let fontSize = 20;
+        let columns = canvas.width / fontSize;
+
+        let drops = [];
+        for (let i = 0; i < columns; i++) {
+          drops[i] = 1;
+        }
+
+        function draw() {
+          ctx.fillStyle = "rgba(0,0,0,0.05)";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          ctx.fillStyle = "lime";
+          ctx.font = fontSize + "px monospace";
+
+          for (let i = 0; i < drops.length; i++) {
+            let text = letters[Math.floor(Math.random() * letters.length)];
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.95) {
+              drops[i] = 0;
+            }
+
+            drops[i]++;
+          }
+        }
+
+        setInterval(draw, 33);
+      }
+    </script>
+  </body>
+</html>
