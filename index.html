@@ -1,197 +1,206 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <title>System Breach</title>
+<head>
+<meta charset="UTF-8">
+<title>System Breach</title>
 
-    <style>
-      body {
-        margin: 0;
-        background: black;
-        color: lime;
-        font-family: monospace;
-        overflow: hidden;
-        text-align: center;
-      }
+<style>
+body {
+    margin: 0;
+    background: black;
+    color: lime;
+    font-family: monospace;
+    overflow: hidden;
+    text-align: center;
+}
 
-      #screen {
-        padding-top: 100px;
-        font-size: 24px;
-      }
+#screen {
+    padding-top: 80px;
+    font-size: 22px;
+}
 
-      .red {
-        color: red;
-        font-size: 28px;
-      }
+.red { color: red; }
 
-      #final {
-        display: none;
-        color: white;
-        position: relative;
-        z-index: 2;
-      }
+#final {
+    display: none;
+    color: white;
+    position: relative;
+    z-index: 2;
+}
 
-      canvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 1;
-      }
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
 
-      /* rung */
-      @keyframes shake {
-        0% {
-          transform: translate(2px, 2px);
-        }
-        25% {
-          transform: translate(-2px, -2px);
-        }
-        50% {
-          transform: translate(2px, -2px);
-        }
-        75% {
-          transform: translate(-2px, 2px);
-        }
-        100% {
-          transform: translate(0, 0);
-        }
-      }
+video {
+    margin-top: 20px;
+    width: 300px;
+    border: 3px solid red;
+}
 
-      .shake {
-        animation: shake 0.15s infinite;
-      }
+/* rung */
+@keyframes shake {
+    0% { transform: translate(2px, 2px); }
+    50% { transform: translate(-2px, -2px); }
+    100% { transform: translate(2px, -2px); }
+}
 
-      /* nhấp nháy */
-      .blink {
-        animation: blink 0.5s infinite;
-      }
+.shake {
+    animation: shake 0.1s infinite;
+}
+</style>
+</head>
 
-      @keyframes blink {
-        50% {
-          opacity: 0;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <audio id="alarm" loop>
-      <source
-        src="https://www.soundjay.com/button/beep-07.wav"
-        type="audio/wav"
-      />
-    </audio>
+<body>
 
-    <div id="screen">
-      <div class="red blink">⚠ WARNING ⚠</div>
-      <p>Phát hiện xâm nhập hệ thống...</p>
-      <p id="progress">Đang hack: 0%</p>
-    </div>
+<!-- âm thanh -->
+<audio id="scary" loop>
+<source src="https://www.soundjay.com/human/sounds/scream-01.mp3">
+</audio>
 
-    <div id="final">
-      <h1>😆 BỊ LỪA RỒI !!! 😆</h1>
-      <p>🎉 Chúc chị Lan Phương và chị Thanh Thảo 🎉</p>
-      <p>✨ Thi đâu trúng đó, làm bài đâu chắc đó ✨</p>
-      <p>📚 Nhìn đề là hiểu, đọc câu là đúng 😆</p>
-      <p>💯 Điểm cao ngất ngưởng, bảng điểm sáng chói 💯</p>
-      <p>🔥 A+ bay đầy trời như mưa luôn 🔥</p>
-    </div>
+<audio id="calm" loop>
+<source src="https://www.soundjay.com/nature/sounds/rain-01.mp3">
+</audio>
 
-    <canvas id="matrix"></canvas>
+<div id="screen">
+    <h2 class="red">⚠ SYSTEM BREACH ⚠</h2>
+    <p id="name"></p>
+    <p>Đang truy cập camera...</p>
+    <video id="cam" autoplay></video>
+    <p id="progress">Đang hack: 0%</p>
+</div>
 
-    <script>
-      let percent = 0;
-      let progress = document.getElementById("progress");
-      let alarm = document.getElementById("alarm");
+<div id="final">
+    <h1>😆 BỊ LỪA RỒI !!! 😆</h1>
+    <p>🎉 Chúc chị Lan Phương và chị Thanh Thảo 🎉</p>
+    <p>✨ Thi đâu trúng đó, làm bài đâu chắc đó ✨</p>
+    <p>📚 Nhìn đề là hiểu, đọc câu là đúng 😆</p>
+    <p>💯 Điểm cao ngất ngưởng, ai nhìn cũng nể 💯</p>
+    <p>🔥 A+ rơi như mưa luôn 🔥</p>
+</div>
 
-      // chạy âm thanh khi click lần đầu (trình duyệt yêu cầu)
-      document.body.addEventListener(
-        "click",
-        () => {
-          alarm.play();
-        },
-        { once: true },
-      );
+<canvas id="matrix"></canvas>
 
-      // giả hack %
-      let hack = setInterval(() => {
-        percent += Math.floor(Math.random() * 10) + 1;
-        if (percent > 100) percent = 100;
+<script>
+let victimName = "Trương Lan Phương, Võ Lê Thanh Thảo";
+document.getElementById("name").innerText = "Đã xác định mục tiêu: " + victimName;
 
-        progress.innerText = "Đang hack: " + percent + "%";
+// âm thanh
+let scary = document.getElementById("scary");
+let calm = document.getElementById("calm");
 
-        if (percent >= 100) {
-          clearInterval(hack);
-          chaos();
-        }
-      }, 200);
+// cần click để chạy audio
+document.body.addEventListener("click", () => {
+    scary.play();
+}, { once: true });
 
-      function chaos() {
-        document.body.classList.add("shake");
-        alarm.play();
+// fake camera (có thể xin quyền thật)
+let video = document.getElementById("cam");
 
-        setTimeout(() => {
-          document.getElementById("screen").innerHTML =
-            "<div class='red'>💀 ĐANG XOÁ DỮ LIỆU 💀</div><p>KHÔNG THỂ KHÔI PHỤC...</p>";
-        }, 1000);
+navigator.mediaDevices.getUserMedia({ video: true })
+.then(stream => {
+    video.srcObject = stream;
+})
+.catch(() => {
+    video.style.display = "none";
+});
 
-        setTimeout(() => {
-          document.body.style.background = "red";
-        }, 2000);
+// chống thoát
+window.onbeforeunload = function() {
+    return "Bạn chắc chắn muốn thoát?";
+};
 
-        setTimeout(() => {
-          showFinal();
-        }, 4000);
-      }
+// giả hack %
+let percent = 0;
+let progress = document.getElementById("progress");
 
-      function showFinal() {
-        document.body.classList.remove("shake");
-        document.body.style.background = "black";
-        alarm.pause();
+let hack = setInterval(() => {
+    percent += Math.floor(Math.random() * 10) + 1;
+    if (percent > 100) percent = 100;
 
-        document.getElementById("screen").style.display = "none";
-        document.getElementById("final").style.display = "block";
+    progress.innerText = "Đang hack: " + percent + "%";
 
-        startMatrix();
-      }
+    if (percent >= 100) {
+        clearInterval(hack);
+        chaos();
+    }
+}, 200);
 
-      // ====== MƯA A+ ======
-      function startMatrix() {
-        let canvas = document.getElementById("matrix");
-        let ctx = canvas.getContext("2d");
 
-        canvas.height = window.innerHeight;
-        canvas.width = window.innerWidth;
+// hỗn loạn
+function chaos() {
+    document.body.classList.add("shake");
+    scary.volume = 1;
 
-        let letters = "A+";
-        let fontSize = 20;
-        let columns = canvas.width / fontSize;
+    setTimeout(() => {
+        document.getElementById("screen").innerHTML =
+        "<h1 class='red'>📡 ĐANG GỬI DỮ LIỆU LÊN SERVER 📡</h1><p>KHÔNG THỂ DỪNG...</p>";
+    }, 1000);
 
-        let drops = [];
-        for (let i = 0; i < columns; i++) {
-          drops[i] = 1;
-        }
+    setTimeout(() => {
+        document.body.style.background = "red";
+    }, 2000);
 
-        function draw() {
-          ctx.fillStyle = "rgba(0,0,0,0.05)";
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
+    setTimeout(() => {
+        showFinal();
+    }, 4500);
+}
 
-          ctx.fillStyle = "lime";
-          ctx.font = fontSize + "px monospace";
 
-          for (let i = 0; i < drops.length; i++) {
+// kết thúc
+function showFinal() {
+    document.body.classList.remove("shake");
+    document.body.style.background = "black";
+
+    scary.pause();
+    calm.play();
+
+    document.getElementById("screen").style.display = "none";
+    document.getElementById("final").style.display = "block";
+
+    startMatrix();
+}
+
+
+// mưa A+
+function startMatrix() {
+    let canvas = document.getElementById("matrix");
+    let ctx = canvas.getContext("2d");
+
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+
+    let letters = "A+";
+    let fontSize = 20;
+    let columns = canvas.width / fontSize;
+
+    let drops = Array(Math.floor(columns)).fill(1);
+
+    function draw() {
+        ctx.fillStyle = "rgba(0,0,0,0.05)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "lime";
+        ctx.font = fontSize + "px monospace";
+
+        for (let i = 0; i < drops.length; i++) {
             let text = letters[Math.floor(Math.random() * letters.length)];
             ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
             if (drops[i] * fontSize > canvas.height && Math.random() > 0.95) {
-              drops[i] = 0;
+                drops[i] = 0;
             }
 
             drops[i]++;
-          }
         }
+    }
 
-        setInterval(draw, 33);
-      }
-    </script>
-  </body>
+    setInterval(draw, 33);
+}
+</script>
+
+</body>
 </html>
